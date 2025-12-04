@@ -1,0 +1,77 @@
+// proto/router.proto
+syntax = "proto3";
+package router;
+option go_package = "github.com/iamnarcisse/llm-router/proto";
+
+// Embedding Service (Python)
+service EmbeddingService {
+  rpc Embed(EmbedRequest) returns (EmbedResponse);
+  rpc EmbedBatch(EmbedBatchRequest) returns (EmbedBatchResponse);
+}
+
+message EmbedRequest {
+  string text = 1;
+}
+
+message EmbedResponse {
+  repeated float vector = 1;
+  int32 dimensions = 2;
+  float latency_ms = 3;
+}
+
+message EmbedBatchRequest {
+  repeated string texts = 1;
+}
+
+message EmbedBatchResponse {
+  repeated Vector vectors = 1;
+  float latency_ms = 2;
+}
+
+message Vector {
+  repeated float values = 1;
+}
+
+// Router Service (Go) - exposed to RAG system
+service RouterService {
+  rpc Route(RouteRequest) returns (RouteResponse);
+  rpc HealthCheck(HealthRequest) returns (HealthResponse);
+  rpc ReloadRoutes(ReloadRequest) returns (ReloadResponse);
+}
+
+message RouteRequest {
+  string query = 1;
+  int32 top_k = 2;                    // default: 3
+  float score_threshold = 3;          // default: 0.5
+  map<string, string> filters = 4;    // optional: {"provider": "anthropic"}
+}
+
+message RouteResponse {
+  string route = 1;
+  string model = 2;
+  float confidence = 3;
+  float total_latency_ms = 4;
+  LatencyBreakdown latency_breakdown = 5;
+  map<string, string> metadata = 6;
+}
+
+message LatencyBreakdown {
+  float embedding_ms = 1;
+  float vector_search_ms = 2;
+  float cache_lookup_ms = 3;
+}
+
+message HealthRequest {}
+message HealthResponse {
+  bool healthy = 1;
+  string embedding_service_status = 2;
+  string qdrant_status = 3;
+}
+
+message ReloadRequest {}
+message ReloadResponse {
+  bool success = 1;
+  int32 routes_loaded = 2;
+}
+
+

@@ -1,0 +1,20 @@
+# services/embedding/pyproject.toml
+[project]
+name = "llm-router-embedding"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "grpcio>=1.62.0",
+    "grpcio-tools>=1.62.0",
+    "sentence-transformers>=3.0.0",
+    "torch>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

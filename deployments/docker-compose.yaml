@@ -1,0 +1,61 @@
+# deployments/docker-compose.yaml
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  embedding:
+    build:
+      context: ../services/embedding
+      dockerfile: Dockerfile
+    ports:
+      - "50052:50052"
+    environment:
+      - MODEL_NAME=Qwen/Qwen3-Embedding-0.6B
+      - GRPC_PORT=50052
+      - MAX_WORKERS=4
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import grpc; grpc.channel_ready_future(grpc.insecure_channel('localhost:50052')).result(timeout=5)",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+  router:
+    build:
+      context: ../services/router
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+      - "8080:8080"
+    environment:
+      - CONFIG_PATH=/configs/config.yaml
+      - ROUTES_PATH=/configs/routes.yaml
+    volumes:
+      - ../configs:/configs:ro
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      embedding:
+        condition: service_healthy
+
+volumes:
+  qdrant_data:
