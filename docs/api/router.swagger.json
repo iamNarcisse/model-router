@@ -1,0 +1,273 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "router.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "EmbeddingService"
+    },
+    {
+      "name": "RouterService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "operationId": "RouterService_HealthCheck",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/routerHealthResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "RouterService"
+        ]
+      }
+    },
+    "/v1/reload": {
+      "post": {
+        "operationId": "RouterService_ReloadRoutes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/routerReloadResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "RouterService"
+        ]
+      }
+    },
+    "/v1/route": {
+      "post": {
+        "operationId": "RouterService_Route",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/routerRouteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/routerRouteRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RouterService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "routerEmbedBatchResponse": {
+      "type": "object",
+      "properties": {
+        "vectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/routerVector"
+          }
+        },
+        "latencyMs": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "routerEmbedResponse": {
+      "type": "object",
+      "properties": {
+        "vector": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "dimensions": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "latencyMs": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "routerHealthResponse": {
+      "type": "object",
+      "properties": {
+        "healthy": {
+          "type": "boolean"
+        },
+        "embeddingServiceStatus": {
+          "type": "string"
+        },
+        "qdrantStatus": {
+          "type": "string"
+        }
+      }
+    },
+    "routerLatencyBreakdown": {
+      "type": "object",
+      "properties": {
+        "embeddingMs": {
+          "type": "number",
+          "format": "float"
+        },
+        "vectorSearchMs": {
+          "type": "number",
+          "format": "float"
+        },
+        "cacheLookupMs": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "routerReloadResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "routesLoaded": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "routerRouteRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "topK": {
+          "type": "integer",
+          "format": "int32",
+          "title": "default: 3"
+        },
+        "scoreThreshold": {
+          "type": "number",
+          "format": "float",
+          "title": "default: 0.5"
+        },
+        "filters": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "optional: {\"provider\": \"anthropic\"}"
+        }
+      }
+    },
+    "routerRouteResponse": {
+      "type": "object",
+      "properties": {
+        "route": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "format": "float"
+        },
+        "totalLatencyMs": {
+          "type": "number",
+          "format": "float"
+        },
+        "latencyBreakdown": {
+          "$ref": "#/definitions/routerLatencyBreakdown"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "routerVector": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

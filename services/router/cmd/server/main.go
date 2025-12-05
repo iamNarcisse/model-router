@@ -12,7 +12,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
 	config "llm-router/services/router/internal/config"
@@ -64,14 +66,39 @@ func main() {
 		}
 	}()
 
-	// Start HTTP health server
+	// Create gRPC-gateway mux
+	gwMux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	err = pb.RegisterRouterServiceHandlerFromEndpoint(
+		ctx,
+		gwMux,
+		fmt.Sprintf("localhost:%d", cfg.Server.GRPCPort),
+		opts,
+	)
+	if err != nil {
+		log.Fatalf("Failed to register gateway: %v", err)
+	}
+
+	// Create main HTTP mux combining gateway and health endpoints
+	httpMux := http.NewServeMux()
+	httpMux.Handle("/v1/", gwMux)                        // gRPC-gateway routes
+	httpMux.Handle("/health", server.NewHealthHandler(rtr)) // Legacy health endpoint
+	httpMux.Handle("/ready", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	}))
+
+	// Start HTTP server (gateway + health)
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Server.HTTPPort),
-		Handler: server.NewHealthHandler(rtr),
+		Handler: httpMux,
 	}
 
 	go func() {
-		log.Printf("HTTP health server listening on :%d", cfg.Server.HTTPPort)
+		log.Printf("HTTP server (gRPC-gateway + health) listening on :%d", cfg.Server.HTTPPort)
+		log.Printf("  - REST API: http://localhost:%d/v1/*", cfg.Server.HTTPPort)
+		log.Printf("  - Health:   http://localhost:%d/health", cfg.Server.HTTPPort)
+		log.Printf("  - OpenAPI:  docs/api/router.swagger.json")
 		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
 			log.Fatalf("HTTP server failed: %v", err)
 		}

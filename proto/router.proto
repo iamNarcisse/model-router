@@ -3,6 +3,8 @@ syntax = "proto3";
 package router;
 option go_package = "llm-router/proto";
 
+import "google/api/annotations.proto";
+
 // Embedding Service (Python)
 service EmbeddingService {
   rpc Embed(EmbedRequest) returns (EmbedResponse);
@@ -34,9 +36,24 @@ message Vector {
 
 // Router Service (Go) - exposed to RAG system
 service RouterService {
-  rpc Route(RouteRequest) returns (RouteResponse);
-  rpc HealthCheck(HealthRequest) returns (HealthResponse);
-  rpc ReloadRoutes(ReloadRequest) returns (ReloadResponse);
+  rpc Route(RouteRequest) returns (RouteResponse) {
+    option (google.api.http) = {
+      post: "/v1/route"
+      body: "*"
+    };
+  }
+
+  rpc HealthCheck(HealthRequest) returns (HealthResponse) {
+    option (google.api.http) = {
+      get: "/v1/health"
+    };
+  }
+
+  rpc ReloadRoutes(ReloadRequest) returns (ReloadResponse) {
+    option (google.api.http) = {
+      post: "/v1/reload"
+    };
+  }
 }
 
 message RouteRequest {

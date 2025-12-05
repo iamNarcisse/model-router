@@ -72,8 +72,66 @@ make test-integration
 
 Default ports (Docker):
 - Router gRPC: `50051`
+- Router HTTP/REST: `8080`
 - Embedding gRPC: `50052`
 - Qdrant: `6333` (HTTP), `6334` (gRPC)
+
+## REST API
+
+The router exposes a REST API via grpc-gateway for easy HTTP access.
+
+### Route a Query
+
+```bash
+curl -X POST http://localhost:8080/v1/route \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Write a Python function to sort a list",
+    "top_k": 3,
+    "score_threshold": 0.5
+  }'
+```
+
+**Response:**
+```json
+{
+  "route": "code_generation",
+  "model": "deepseek-coder-v2",
+  "confidence": 1.21,
+  "totalLatencyMs": 128,
+  "latencyBreakdown": {
+    "embeddingMs": 80.07,
+    "vectorSearchMs": 9,
+    "cacheLookupMs": 0
+  },
+  "metadata": {
+    "provider": "deepseek",
+    "cost_tier": "low",
+    "use_case": "Software development and code debugging"
+  }
+}
+```
+
+### Health Check
+
+```bash
+curl http://localhost:8080/v1/health
+```
+
+**Response:**
+```json
+{
+  "healthy": true,
+  "embeddingServiceStatus": "healthy",
+  "qdrantStatus": "healthy"
+}
+```
+
+### OpenAPI Documentation
+
+OpenAPI/Swagger spec available at: `docs/api/router.swagger.json`
+
+Import into [Swagger Editor](https://editor.swagger.io/) or [Postman](https://www.postman.com/) for interactive API docs.
 
 ## Commands
 

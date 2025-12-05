@@ -9,6 +9,7 @@
 package proto
 
 import (
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -667,7 +668,7 @@ var File_router_proto protoreflect.FileDescriptor
 
 const file_router_proto_rawDesc = "" +
 	"\n" +
-	"\frouter.proto\x12\x06router\"\"\n" +
+	"\frouter.proto\x12\x06router\x1a\x1cgoogle/api/annotations.proto\"\"\n" +
 	"\fEmbedRequest\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\"f\n" +
 	"\rEmbedResponse\x12\x16\n" +
@@ -721,11 +722,13 @@ const file_router_proto_rawDesc = "" +
 	"\x10EmbeddingService\x124\n" +
 	"\x05Embed\x12\x14.router.EmbedRequest\x1a\x15.router.EmbedResponse\x12C\n" +
 	"\n" +
-	"EmbedBatch\x12\x19.router.EmbedBatchRequest\x1a\x1a.router.EmbedBatchResponse2\xc2\x01\n" +
-	"\rRouterService\x124\n" +
-	"\x05Route\x12\x14.router.RouteRequest\x1a\x15.router.RouteResponse\x12<\n" +
-	"\vHealthCheck\x12\x15.router.HealthRequest\x1a\x16.router.HealthResponse\x12=\n" +
-	"\fReloadRoutes\x12\x15.router.ReloadRequest\x1a\x16.router.ReloadResponseB\x12Z\x10llm-router/protob\x06proto3"
+	"EmbedBatch\x12\x19.router.EmbedBatchRequest\x1a\x1a.router.EmbedBatchResponse2\x80\x02\n" +
+	"\rRouterService\x12J\n" +
+	"\x05Route\x12\x14.router.RouteRequest\x1a\x15.router.RouteResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/route\x12P\n" +
+	"\vHealthCheck\x12\x15.router.HealthRequest\x1a\x16.router.HealthResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
+	"/v1/health\x12Q\n" +
+	"\fReloadRoutes\x12\x15.router.ReloadRequest\x1a\x16.router.ReloadResponse\"\x12\x82\xd3\xe4\x93\x02\f\"\n" +
+	"/v1/reloadB\x12Z\x10llm-router/protob\x06proto3"
 
 var (
 	file_router_proto_rawDescOnce sync.Once
