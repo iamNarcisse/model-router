@@ -48,12 +48,6 @@ service RouterService {
       get: "/v1/health"
     };
   }
-
-  rpc ReloadRoutes(ReloadRequest) returns (ReloadResponse) {
-    option (google.api.http) = {
-      post: "/v1/reload"
-    };
-  }
 }
 
 message RouteRequest {
