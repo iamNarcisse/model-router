@@ -1,0 +1,50 @@
+# routes.yaml
+default_model: gpt-4o-mini
+
+routes:
+  - name: code_generation
+    model: deepseek-coder-v2
+    provider: deepseek
+    metadata:
+      cost_tier: low
+      max_tokens: 8192
+    utterances:
+      - "write a python function"
+      - "help me debug this code"
+      - "create a REST API"
+      - "fix this bug"
+      - "write unit tests"
+
+  - name: creative_writing
+    model: claude-sonnet-4-20250514
+    provider: anthropic
+    metadata:
+      cost_tier: medium
+      max_tokens: 4096
+    utterances:
+      - "write a poem"
+      - "craft a story"
+      - "creative headline"
+      - "write marketing copy"
+
+  - name: analysis
+    model: gpt-4o
+    provider: openai
+    metadata:
+      cost_tier: high
+      max_tokens: 8192
+    utterances:
+      - "analyze this data"
+      - "summarize this document"
+      - "extract insights from"
+      - "compare these options"
+
+  - name: math_reasoning
+    model: claude-sonnet-4-20250514
+    provider: anthropic
+    metadata:
+      cost_tier: medium
+    utterances:
+      - "solve this equation"
+      - "prove this theorem"
+      - "calculate the probability"

@@ -26,7 +26,7 @@ python -m grpc_tools.protoc \
     $PROTO_DIR/router.proto
 
 # Fix Python imports
-sed -i 's/import router_pb2/from . import router_pb2/' $PY_OUT/router_pb2_grpc.py
+sed -i '' 's/import router_pb2/from . import router_pb2/' $PY_OUT/router_pb2_grpc.py
 
 # Create __init__.py
 cat > $PY_OUT/__init__.py << 'EOF'

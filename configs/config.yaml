@@ -1,0 +1,23 @@
+server:
+  grpc_port: 50051
+  http_port: 8080
+
+embedding:
+  address: "localhost:50052"
+  timeout: 60ms
+  max_retries: 2
+
+qdrant:
+  host: "localhost"
+  port: 6334
+  collection: "llm_routes"
+
+cache:
+  enabled: false
+  local_ttl: 1h
+  local_capacity: 10000
+
+routing:
+  default_model: "gpt-4o-mini"
+  score_threshold: 0.5
+  top_k: 3

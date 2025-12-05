@@ -1,7 +1,7 @@
 // proto/router.proto
 syntax = "proto3";
 package router;
-option go_package = "github.com/iamnarcisse/llm-router/proto";
+option go_package = "llm-router/proto";
 
 // Embedding Service (Python)
 service EmbeddingService {
